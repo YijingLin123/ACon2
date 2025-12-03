@@ -10,21 +10,27 @@ class NoObservation(Exception):
 
 class SinglePriceDataset:
     def __init__(self, path):
-        file_name = glob.glob(path + '*.pk')
-        if len(file_name) == 0:
-            path_split = path.split('/')
-            pair_name = path_split[-2]
-            pair_name_split = pair_name.split('_')
-            pair_name = '_'.join([pair_name_split[0], pair_name_split[2], pair_name_split[1]])
-            path_split[-2] = pair_name
-            path = '/'.join(path_split)
-            
-            file_name = glob.glob(path + '*.pk')
-            assert(len(file_name) == 1)
-            self.inverse_price = True
+        self.inverse_price = False
+        file_name = []
+
+        if os.path.isdir(path):
+            file_name = glob.glob(os.path.join(path, '*.pk'))
+            if len(file_name) == 0:
+                path_split = path.split('/')
+                pair_name = path_split[-2]
+                pair_name_split = pair_name.split('_')
+                pair_name = '_'.join([pair_name_split[0], pair_name_split[2], pair_name_split[1]])
+                path_split[-2] = pair_name
+                path_alt = '/'.join(path_split)
+                file_name = glob.glob(os.path.join(path_alt, '*.pk'))
+                if len(file_name) == 0:
+                    raise FileNotFoundError(f'在 {path} 或 {path_alt} 下没有找到 .pk 文件')
+                self.inverse_price = True
+        elif os.path.isfile(path) and path.endswith('.pk'):
+            file_name = [path]
         else:
-            assert(len(file_name) == 1)
-            self.inverse_price = False
+            raise FileNotFoundError(f'无法找到价格文件或目录: {path}')
+        assert len(file_name) == 1, f'匹配到多个价格文件: {file_name}'
             
         file_name = file_name[0]
         self.data = pickle.load(open(file_name, 'rb'))

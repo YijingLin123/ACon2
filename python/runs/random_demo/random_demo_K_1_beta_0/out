@@ -1,0 +1,62 @@
+args:
+	exp_name: random_demo_K_1_beta_0
+	output_root: runs/random_demo
+	cpu: False
+	data:
+		name: RandomPriceDataset
+		path: ['synthetic']
+		start_time: 2021-01-01T00:00
+		end_time: 2021-01-01T00:10
+		time_step_sec: 60
+		seed: 0
+		exp_name: random_demo_K_1_beta_0
+		output_root: runs/random_demo
+
+	model_base:
+		name: ['KF1D']
+		score_min: [0.0]
+		score_max: [1.0]
+		lr: [0.001]
+		state_noise_init: [0.1]
+		obs_noise_init: [0.1]
+		exp_name: random_demo_K_1_beta_0
+		output_root: runs/random_demo
+
+	model_ps:
+		name: ['SpecialMVP']
+		n_bins: [20]
+		eta: 5
+		alpha: [0.1]
+		beta: 0
+		nonconsensus_param: 0
+		exp_name: random_demo_K_1_beta_0
+		output_root: runs/random_demo
+
+	train:
+		method: skip
+		exp_name: random_demo_K_1_beta_0
+		output_root: runs/random_demo
+
+
+Namespace(name='KF1D', score_min=0.0, score_max=1.0, lr=0.001, state_noise_init=0.1, obs_noise_init=0.1, exp_name='random_demo_K_1_beta_0', output_root='runs/random_demo')
+init th = 0.95005
+[MVP] threshold = 0.9500, score = 0.1201, size = -inf, interval = [inf, -inf], obs = 1.2877, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:01:00] median(obs) = 1.2877, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.9500, score = 0.1856, size = -inf, interval = [inf, -inf], obs = -0.5323, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:02:00] median(obs) = -0.5323, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.9000, score = 0.0003, size = -inf, interval = [inf, -inf], obs = -6.4143, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:03:00] median(obs) = -6.4143, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.8500, score = 0.0041, size = -inf, interval = [inf, -inf], obs = -9.3762, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:04:00] median(obs) = -9.3762, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.8000, score = 0.0000, size = -inf, interval = [inf, -inf], obs = -17.2073, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:05:00] median(obs) = -17.2073, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.7500, score = 0.1420, size = -inf, interval = [inf, -inf], obs = -16.2741, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:06:00] median(obs) = -16.2741, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.7000, score = 0.0000, size = -inf, interval = [inf, -inf], obs = -6.7285, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:07:00] median(obs) = -6.7285, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.6500, score = 0.4929, size = -inf, interval = [inf, -inf], obs = -9.6526, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:08:00] median(obs) = -9.6526, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.6000, score = 0.0496, size = -inf, interval = [inf, -inf], obs = -13.7258, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:09:00] median(obs) = -13.7258, interval = [inf, -inf], length = -inf, error = 1.0000
+[MVP] threshold = 0.5500, score = 0.0017, size = -inf, interval = [inf, -inf], obs = -18.4326, error_cur = 1.0, error = 1.0000
+[time = 2021-01-01T00:10:00] median(obs) = -18.4326, interval = [inf, -inf], length = -inf, error = 1.0000
