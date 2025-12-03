@@ -9,6 +9,8 @@ pip install cbpro
 
 通过coingecko/yahoo免费抓取过去365天的数据：python data/read_offchain_price.py 
 
+python data/preview_price_files.py --all 1-coingecko_2025-11-27T00:00_2025-12-02T23:59.pk
+
 python main.py \
     --exp_name eth_usd_demo \
     --data.name PriceDataset \
