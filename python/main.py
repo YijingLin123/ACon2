@@ -3,12 +3,76 @@ import argparse
 import copy
 import warnings
 import pickle
+import time
 
 import data
 import utils
 import acon2
 
 import numpy as np
+
+# def parse_args():
+#     ## init a parser
+#     parser = argparse.ArgumentParser(description='online learning')
+#
+#     ## meta args
+#     parser.add_argument('--exp_name', type=str, required=True)
+#     parser.add_argument('--output_root', type=str, default='output')
+#     parser.add_argument('--cpu', action='store_true')
+#
+#     ## data args
+#     parser.add_argument('--data.name', type=str, default='PriceDataset')
+#     parser.add_argument('--data.path', type=str, nargs='+', default=[
+#         'data/price_ETH_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_BTC_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_BTC_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_BTC_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_DOGE_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+#         'data/price_DOGE_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+#
+#     ])
+#     parser.add_argument('--data.start_time', type=str, default='2025-11-27T00:00')
+#     parser.add_argument('--data.end_time', type=str, default='2025-12-02T23:59')
+#     parser.add_argument('--data.time_step_sec', type=int, default=60) #60
+#     parser.add_argument('--data.seed', type=lambda v: None if v=='None' else int(v), default=0)
+#
+#     ## model args
+#     parser.add_argument('--model_base.name', type=str, nargs='+', default=['KF1D', 'KF1D', 'KF1D', 'KF1D'])
+#     parser.add_argument('--model_base.score_min', type=float, nargs='+', default=[0.0, 0.0, 0.0])
+#     parser.add_argument('--model_base.score_max', type=float, nargs='+', default=[1.0, 1.0, 1.0])
+#     parser.add_argument('--model_base.lr', type=float, nargs='+', default=[1e-3, 1e-3, 1e-3])
+#     parser.add_argument('--model_base.state_noise_init', type=float, nargs='+', default=[0.1, 0.1, 0.1])
+#     parser.add_argument('--model_base.obs_noise_init', type=float, nargs='+', default=[0.1, 0.1, 0.1])
+#
+#     parser.add_argument('--model_ps.name', type=str, nargs='+', default=['SpecialMVP', 'SpecialMVP', 'SpecialMVP'])
+#     parser.add_argument('--model_ps.n_bins', type=int, nargs='+', default=[100, 100, 100])
+#
+#     parser.add_argument('--model_ps.eta', type=float, default=5)
+#     parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01, 0.01, 0.01])
+#     parser.add_argument('--model_ps.beta', type=int, default=1)
+#     parser.add_argument('--model_ps.nonconsensus_param', type=float, default=0)
+#
+#     ## training algorithm args
+#     parser.add_argument('--train.method', type=str, default='skip')
+#
+#     args = parser.parse_args()
+#     args = utils.to_tree_namespace(args)
+#     args.exp_name = f'{args.exp_name}_K_{len(args.data.path)}_beta_{args.model_ps.beta}'
+#     args = utils.propagate_args(args, 'exp_name')
+#     args = utils.propagate_args(args, 'output_root')
+#
+#     ## set loggers
+#     os.makedirs(os.path.join(args.output_root, args.exp_name), exist_ok=True)
+#     sys.stdout = utils.Logger(os.path.join(args.output_root, args.exp_name, 'out'))
+#
+#     ## print args
+#     utils.print_args(args)
+#
+#     return args
+
 
 def parse_args():
     ## init a parser
@@ -22,48 +86,56 @@ def parse_args():
     ## data args
     parser.add_argument('--data.name', type=str, default='PriceDataset')
     parser.add_argument('--data.path', type=str, nargs='+', default=[
-        'data/price_USD_ETH/coinbase',
-        'data/price_USD_ETH/binance',
-        'data/price_USD_ETH/UniswapV2',
+        'data/price_ETH_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_BTC_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_BTC_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_BTC_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_DOGE_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk',
+        'data/price_DOGE_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+
     ])
-    parser.add_argument('--data.start_time', type=str, default='2021-01-01T00:00')
-    parser.add_argument('--data.end_time', type=str, default='2021-12-31T23:59')
+    parser.add_argument('--data.start_time', type=str, default='2025-11-27T00:00')
+    parser.add_argument('--data.end_time', type=str, default='2025-12-02T23:59')
     parser.add_argument('--data.time_step_sec', type=int, default=60) #60
     parser.add_argument('--data.seed', type=lambda v: None if v=='None' else int(v), default=0)
 
     ## model args
-    parser.add_argument('--model_base.name', type=str, nargs='+', default=['KF1D', 'KF1D', 'KF1D'])
-    parser.add_argument('--model_base.score_min', type=float, nargs='+', default=[0.0, 0.0, 0.0])
-    parser.add_argument('--model_base.score_max', type=float, nargs='+', default=[1.0, 1.0, 1.0])
-    parser.add_argument('--model_base.lr', type=float, nargs='+', default=[1e-3, 1e-3, 1e-3])
-    parser.add_argument('--model_base.state_noise_init', type=float, nargs='+', default=[0.1, 0.1, 0.1])
-    parser.add_argument('--model_base.obs_noise_init', type=float, nargs='+', default=[0.1, 0.1, 0.1])
-    
-    parser.add_argument('--model_ps.name', type=str, nargs='+', default=['SpecialMVP', 'SpecialMVP', 'SpecialMVP'])    
-    parser.add_argument('--model_ps.n_bins', type=int, nargs='+', default=[100, 100, 100])
-    
+    parser.add_argument('--model_base.name', type=str, nargs='+', default=['KF1D']*10)
+    parser.add_argument('--model_base.score_min', type=float, nargs='+', default=[0.0]*10)
+    parser.add_argument('--model_base.score_max', type=float, nargs='+', default=[1.0]*10)
+    parser.add_argument('--model_base.lr', type=float, nargs='+', default=[1e-3]*10)
+    parser.add_argument('--model_base.state_noise_init', type=float, nargs='+', default=[0.1]*10)
+    parser.add_argument('--model_base.obs_noise_init', type=float, nargs='+', default=[0.1]*10)
+
+    parser.add_argument('--model_ps.name', type=str, nargs='+', default=['SpecialMVP']*10)
+    parser.add_argument('--model_ps.n_bins', type=int, nargs='+', default=[100]*10)
+
     parser.add_argument('--model_ps.eta', type=float, default=5)
-    parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01, 0.01, 0.01])
-    parser.add_argument('--model_ps.beta', type=int, default=1) 
-    parser.add_argument('--model_ps.nonconsensus_param', type=float, default=0) 
-    
+    parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01]*10)
+    parser.add_argument('--model_ps.beta', type=int, default=1)
+    parser.add_argument('--model_ps.nonconsensus_param', type=float, default=0)
+
     ## training algorithm args
     parser.add_argument('--train.method', type=str, default='skip')
-    
+
     args = parser.parse_args()
     args = utils.to_tree_namespace(args)
     args.exp_name = f'{args.exp_name}_K_{len(args.data.path)}_beta_{args.model_ps.beta}'
     args = utils.propagate_args(args, 'exp_name')
     args = utils.propagate_args(args, 'output_root')
-    
+
     ## set loggers
     os.makedirs(os.path.join(args.output_root, args.exp_name), exist_ok=True)
     sys.stdout = utils.Logger(os.path.join(args.output_root, args.exp_name, 'out'))
-    
+
     ## print args
     utils.print_args(args)
-    
-    return args    
+
+    return args
+
 
 
 def split_args(args):
@@ -119,21 +191,19 @@ def run(args):
 
     for i, time in enumerate(Clock(time_start, time_end, time_delta)):
         # read observations
-        try: 
+        try:
             obs = ds.read(time)
         except StopIteration:
             break
 
         if all([obs[k] is None for k in obs.keys()]):
             continue
-            
-        
         # update
         if not model_ps.initialized:
             model_ps.init_or_update(obs)
         else:
             model_ps.init_or_update(obs)
-            
+
             print(f"[time = {time}] median(obs) = {np.median([obs[k] for k in obs.keys() if obs[k] is not None]):.4f}, "\
                   f"interval = [{model_ps.ps[0]:.4f}, {model_ps.ps[1]:.4f}], length = {model_ps.ps[1] - model_ps.ps[0]:.4f}, "\
                   f"error = {model_ps.n_err / model_ps.n_obs:.4f}")
@@ -144,6 +214,8 @@ def run(args):
 
             
 if __name__ == '__main__':
+    start_ts = time.perf_counter()
     args = parse_args()
     run(args)
-
+    elapsed_ms = (time.perf_counter() - start_ts) * 1000
+    print(f'[profiling] total runtime = {elapsed_ms:.1f} ms')

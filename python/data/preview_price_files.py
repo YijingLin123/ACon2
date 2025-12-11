@@ -62,7 +62,9 @@ def preview_full_file(pk_path: Path):
 
 
 if __name__ == '__main__':
-    folder = Path(__file__).resolve().parent / 'price_ETH_USD'
+    # folder = Path(__file__).resolve().parent / 'price_ETH_USD'
+    folder = Path(__file__).resolve().parent / 'price_BTC_USD'
+    # folder = Path(__file__).resolve().parent / 'price_DOGE_USD'
     if len(sys.argv) > 2 and sys.argv[1] == '--all':
         pk_file = folder / sys.argv[2]
         if not pk_file.exists():

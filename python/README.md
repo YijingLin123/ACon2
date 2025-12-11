@@ -7,14 +7,38 @@ pip install pandas
 pip install python-binance
 pip install cbpro
 
-通过coingecko/yahoo免费抓取过去365天的数据：python data/read_offchain_price.py 
+通过coingecko/cryptocompare/kucoin免费抓取过去7天的BTC/ETH/DOGE数据：python data/read_offchain_price.py 
 
-python data/preview_price_files.py --all 1-coingecko_2025-11-27T00:00_2025-12-02T23:59.pk
+查看前100条和后20条数据内容：python data/preview_price_files.py 
 
+数据对齐，保证sample数量相同：python data/preprocess_align_prices.py
+
+# 正常的
 python main.py \
-    --exp_name eth_usd_demo \
-    --data.name PriceDataset \
-    --data.path data/price_ETH_USD/coingecko_2025-02-01T00:00_2025-06-30T23:59.pk \
-    --data.start_time 2025-02-01T00:00 \
-    --data.end_time 2025-02-01T23:59 \
-    --model_ps.beta 1
+       --exp_name demo_run \
+       --data.path \
+         data/price_ETH_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk \
+         data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk \
+         data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk \
+       --data.start_time 2025-11-27T00:00 \
+       --data.end_time 2025-11-27T00:59
+
+[MVP] threshold = 0.5000, score = 0.5000, size = 0.0004, interval = [3024.6786, 3024.6789], obs = 3024.6787, error_cur = 0.0, error = 0.8621
+[MVP] threshold = 0.4400, score = 0.4788, size = 1.8972, interval = [3035.1439, 3037.0411], obs = 3035.5400, error_cur = 0.0, error = 0.9655
+[MVP] threshold = 0.4400, score = 0.4797, size = 1.9009, interval = [3034.9512, 3036.8521], obs = 3035.3600, error_cur = 0.0, error = 0.9655
+[time = 2025-11-27T00:59:00] median(obs) = 3035.3600, interval = [3035.1439, 3036.8521], length = 1.7082, error = 0.9828
+
+# 一个恶意的
+python main.py \
+       --exp_name demo_run \
+       --data.path \
+         data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk \
+         data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk \
+         data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk \
+       --data.start_time 2025-11-27T00:00 \
+       --data.end_time 2025-11-27T00:59
+
+[MVP] threshold = 0.5000, score = 0.5000, size = 0.0004, interval = [0.1546, 0.1549], obs = 0.1548, error_cur = 0.0, error = 0.8621
+[MVP] threshold = 0.4400, score = 0.4788, size = 1.8972, interval = [3035.1439, 3037.0411], obs = 3035.5400, error_cur = 0.0, error = 0.9655
+[MVP] threshold = 0.4400, score = 0.4797, size = 1.9009, interval = [3034.9512, 3036.8521], obs = 3035.3600, error_cur = 0.0, error = 0.9655
+[time = 2025-11-27T00:59:00] median(obs) = 3035.3600, interval = [3035.1439, 3036.8521], length = 1.7082, error = 0.9828

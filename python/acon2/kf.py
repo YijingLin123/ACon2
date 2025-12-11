@@ -119,8 +119,6 @@ class KF1D:
         # update the max score
         if update_max:
             self.update_score_max()
-
-    
     
     def score(self, obs):
         obs = self.encode(obs)

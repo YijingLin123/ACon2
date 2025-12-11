@@ -83,7 +83,7 @@ class ACon2:
         
             
     def init_or_update(self, label):
-            
+
         if self.initialized:
             # check error
             err = self.error(label)

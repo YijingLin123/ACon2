@@ -1,13 +1,26 @@
 import pickle
 from pathlib import Path
 
-PRICE_DIR = Path(__file__).resolve().parent / 'price_ETH_USD'
+# PRICE_DIR = Path(__file__).resolve().parent / 'price_ETH_USD'
+# REF_FILE = 'cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk'
+# TARGET_FILES = [
+#     'coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+#     'kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+# ]
+
+# PRICE_DIR = Path(__file__).resolve().parent / 'price_BTC_USD'
+# REF_FILE = 'cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk'
+# TARGET_FILES = [
+#     'coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
+#     'kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
+# ]
+
+PRICE_DIR = Path(__file__).resolve().parent / 'price_DOGE_USD'
 REF_FILE = 'cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk'
 TARGET_FILES = [
     'coingecko_2025-11-27T00:00_2025-12-02T23:59.pk',
     'kucoin_2025-11-27T00:00_2025-12-02T23:59.pk',
 ]
-
 
 def load_pk(path: Path):
     with path.open('rb') as fh:
