@@ -89,10 +89,13 @@ class PriceDataset:
         self, data_path,
     ):
         self.seq = {}
-        for p in data_path:
+        self.id_path_map = {}
+        for idx, p in enumerate(data_path):
             seq = SinglePriceDataset(p)
-            print(f'[price data, data_path = {p}] sequence length = {len(seq)}')
-            self.seq[p] = seq
+            data_id = f"{p}__{idx}"
+            print(f'[price data, data_path = {p}, id = {data_id}] sequence length = {len(seq)}')
+            self.seq[data_id] = seq
+            self.id_path_map[data_id] = p
 
     def reset(self):
         for k in self.seq.keys():
@@ -105,7 +108,7 @@ class PriceDataset:
                 out[k] = self.seq[k].read(time.astype('int'))
             except NoObservation:
                 out[k] = None
-        return out            
+        return out
 
 
 class RandomPriceDataset:

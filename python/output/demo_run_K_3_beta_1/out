@@ -38,9 +38,9 @@ args:
 		output_root: output
 
 
-[price data, data_path = data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk] sequence length = 8640
-[price data, data_path = data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk] sequence length = 8640
-[price data, data_path = data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk] sequence length = 8640
+[price data, data_path = data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk, id = data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk__0] sequence length = 8640
+[price data, data_path = data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk, id = data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk__1] sequence length = 8640
+[price data, data_path = data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk, id = data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk__2] sequence length = 8640
 Namespace(name='KF1D', score_min=0.0, score_max=1.0, lr=0.001, state_noise_init=0.1, obs_noise_init=0.1, exp_name='demo_run_K_3_beta_1', output_root='output')
 Namespace(name='KF1D', score_min=0.0, score_max=1.0, lr=0.001, state_noise_init=0.1, obs_noise_init=0.1, exp_name='demo_run_K_3_beta_1', output_root='output')
 Namespace(name='KF1D', score_min=0.0, score_max=1.0, lr=0.001, state_noise_init=0.1, obs_noise_init=0.1, exp_name='demo_run_K_3_beta_1', output_root='output')
@@ -271,12 +271,12 @@ init th = 0.99001
 [MVP] threshold = 0.4500, score = 0.4639, size = 1.7222, interval = [3037.4149, 3039.1370], obs = 3037.5500, error_cur = 0.0, error = 0.9821
 [MVP] threshold = 0.4500, score = 0.4526, size = 1.7248, interval = [3037.6461, 3039.3709], obs = 3037.6700, error_cur = 0.0, error = 0.9821
 [time = 2025-11-27T00:57:00] median(obs) = 3037.5500, interval = [3037.6461, 3039.1370], length = 1.4909, error = 1.0000
-[MVP] threshold = 0.5000, score = 0.5000, size = 0.0004, interval = [0.1546, 0.1549], obs = 0.1548, error_cur = 0.0, error = 0.8772
+[MVP] threshold = 0.5000, score = 0.5000, size = -inf, interval = [inf, -inf], obs = 0.1548, error_cur = 1.0, error = 0.8947
 [MVP] threshold = 0.4500, score = 0.1631, size = 1.7216, interval = [3036.9664, 3038.6881], obs = 3035.0200, error_cur = 1.0, error = 0.9825
 [MVP] threshold = 0.4500, score = 0.0990, size = 1.7243, interval = [3037.1281, 3038.8524], obs = 3034.6100, error_cur = 1.0, error = 0.9825
 [time = 2025-11-27T00:58:00] median(obs) = 3034.6100, interval = [3037.1281, 3038.6881], length = 1.5600, error = 1.0000
-[MVP] threshold = 0.5000, score = 0.5000, size = 0.0004, interval = [0.1546, 0.1549], obs = 0.1548, error_cur = 0.0, error = 0.8621
+[MVP] threshold = 0.5000, score = 0.5000, size = 0.0004, interval = [0.1546, 0.1549], obs = 0.1548, error_cur = 0.0, error = 0.8793
 [MVP] threshold = 0.4400, score = 0.4788, size = 1.8972, interval = [3035.1439, 3037.0411], obs = 3035.5400, error_cur = 0.0, error = 0.9655
 [MVP] threshold = 0.4400, score = 0.4797, size = 1.9009, interval = [3034.9512, 3036.8521], obs = 3035.3600, error_cur = 0.0, error = 0.9655
 [time = 2025-11-27T00:59:00] median(obs) = 3035.3600, interval = [3035.1439, 3036.8521], length = 1.7082, error = 0.9828
-[profiling] total runtime = 223.9 ms
+[profiling] total runtime = 231.7 ms

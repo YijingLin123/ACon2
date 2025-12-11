@@ -103,19 +103,19 @@ def parse_args():
     parser.add_argument('--data.seed', type=lambda v: None if v=='None' else int(v), default=0)
 
     ## model args
-    parser.add_argument('--model_base.name', type=str, nargs='+', default=['KF1D']*10)
-    parser.add_argument('--model_base.score_min', type=float, nargs='+', default=[0.0]*10)
-    parser.add_argument('--model_base.score_max', type=float, nargs='+', default=[1.0]*10)
-    parser.add_argument('--model_base.lr', type=float, nargs='+', default=[1e-3]*10)
-    parser.add_argument('--model_base.state_noise_init', type=float, nargs='+', default=[0.1]*10)
-    parser.add_argument('--model_base.obs_noise_init', type=float, nargs='+', default=[0.1]*10)
+    parser.add_argument('--model_base.name', type=str, nargs='+', default=['KF1D'])
+    parser.add_argument('--model_base.score_min', type=float, nargs='+', default=[0.0])
+    parser.add_argument('--model_base.score_max', type=float, nargs='+', default=[1.0])
+    parser.add_argument('--model_base.lr', type=float, nargs='+', default=[1e-3])
+    parser.add_argument('--model_base.state_noise_init', type=float, nargs='+', default=[0.1])
+    parser.add_argument('--model_base.obs_noise_init', type=float, nargs='+', default=[0.1])
 
-    parser.add_argument('--model_ps.name', type=str, nargs='+', default=['SpecialMVP']*10)
-    parser.add_argument('--model_ps.n_bins', type=int, nargs='+', default=[100]*10)
+    parser.add_argument('--model_ps.name', type=str, nargs='+', default=['SpecialMVP'])
+    parser.add_argument('--model_ps.n_bins', type=int, nargs='+', default=[100])
 
     parser.add_argument('--model_ps.eta', type=float, default=5)
-    parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01]*10)
-    parser.add_argument('--model_ps.beta', type=int, default=1)
+    parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01])
+    parser.add_argument('--model_ps.beta', type=int, default=40)
     parser.add_argument('--model_ps.nonconsensus_param', type=float, default=0)
 
     ## training algorithm args
@@ -123,6 +123,41 @@ def parse_args():
 
     args = parser.parse_args()
     args = utils.to_tree_namespace(args)
+
+    def expand_data_paths(paths):
+        expanded = []
+        for spec in paths:
+            if '@' in spec:
+                base, repeat = spec.rsplit('@', 1)
+                try:
+                    count = int(repeat)
+                except ValueError:
+                    expanded.append(spec)
+                    continue
+                expanded.extend([base] * count)
+            else:
+                expanded.append(spec)
+        return expanded
+
+    def ensure_length(lst, target_len, name):
+        if len(lst) == 1:
+            return lst * target_len
+        if len(lst) != target_len:
+            raise ValueError(f'{name} 长度应为 1 或 {target_len}，当前为 {len(lst)}')
+        return lst
+
+    args.data.path = expand_data_paths(args.data.path)
+    K = len(args.data.path)
+    args.model_base.name = ensure_length(args.model_base.name, K, 'model_base.name')
+    args.model_base.score_min = ensure_length(args.model_base.score_min, K, 'model_base.score_min')
+    args.model_base.score_max = ensure_length(args.model_base.score_max, K, 'model_base.score_max')
+    args.model_base.lr = ensure_length(args.model_base.lr, K, 'model_base.lr')
+    args.model_base.state_noise_init = ensure_length(args.model_base.state_noise_init, K, 'model_base.state_noise_init')
+    args.model_base.obs_noise_init = ensure_length(args.model_base.obs_noise_init, K, 'model_base.obs_noise_init')
+
+    args.model_ps.name = ensure_length(args.model_ps.name, K, 'model_ps.name')
+    args.model_ps.n_bins = ensure_length(args.model_ps.n_bins, K, 'model_ps.n_bins')
+    args.model_ps.alpha = ensure_length(args.model_ps.alpha, K, 'model_ps.alpha')
     args.exp_name = f'{args.exp_name}_K_{len(args.data.path)}_beta_{args.model_ps.beta}'
     args = utils.propagate_args(args, 'exp_name')
     args = utils.propagate_args(args, 'output_root')
@@ -176,11 +211,13 @@ def run(args):
     ## load a dataset
     ds = getattr(data, args.data.name)(args.data.path)
 
+    data_ids = list(ds.seq.keys())
+
     ## load a base model
-    model_base = {k: getattr(acon2, v)(model_base_args) for k, v, model_base_args in zip(args.data.path, args.model_base.name, split_args(args.model_base))}
+    model_base = {k: getattr(acon2, v)(model_base_args) for k, v, model_base_args in zip(data_ids, args.model_base.name, split_args(args.model_base))}
     
     ## load a prediction set
-    model_ps_src = {k: getattr(acon2, model_name)(model_args, model_base[k]) for k, model_name, model_args in zip(args.data.path, args.model_ps.name, split_args(args.model_ps))}
+    model_ps_src = {k: getattr(acon2, model_name)(model_args, model_base[k]) for k, model_name, model_args in zip(data_ids, args.model_ps.name, split_args(args.model_ps))}
 
     model_ps = acon2.ACon2(args.model_ps, model_ps_src)
 
