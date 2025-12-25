@@ -115,7 +115,7 @@ def parse_args():
 
     parser.add_argument('--model_ps.eta', type=float, default=5)
     parser.add_argument('--model_ps.alpha', type=float, nargs='+', default=[0.01])
-    parser.add_argument('--model_ps.beta', type=int, default=40)
+    parser.add_argument('--model_ps.beta', type=int, default=49)
     parser.add_argument('--model_ps.nonconsensus_param', type=float, default=0)
 
     ## training algorithm args

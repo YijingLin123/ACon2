@@ -42,3 +42,27 @@ python main.py \
 [MVP] threshold = 0.4400, score = 0.4788, size = 1.8972, interval = [3035.1439, 3037.0411], obs = 3035.5400, error_cur = 0.0, error = 0.9655
 [MVP] threshold = 0.4400, score = 0.4797, size = 1.9009, interval = [3034.9512, 3036.8521], obs = 3035.3600, error_cur = 0.0, error = 0.9655
 [time = 2025-11-27T00:59:00] median(obs) = 3035.3600, interval = [3035.1439, 3036.8521], length = 1.7082, error = 0.9828
+
+beta=30
+python main.py \
+       --exp_name demo_run \
+       --data.path \
+         data/price_ETH_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk@30 \
+         data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk@30 \
+         data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk@40 \
+       --data.start_time 2025-11-27T00:00 \
+       --data.end_time 2025-11-27T00:59
+
+       [profiling] total runtime = 7854.7 ms
+
+beta=49
+python main.py \
+       --exp_name demo_run \
+       --data.path \
+         data/price_DOGE_USD/coingecko_2025-11-27T00:00_2025-12-02T23:59.pk@40 \
+         data/price_ETH_USD/cryptocompare_2025-11-27T00:00_2025-12-02T23:59.pk@30 \
+         data/price_ETH_USD/kucoin_2025-11-27T00:00_2025-12-02T23:59.pk@30 \
+       --data.start_time 2025-11-27T00:00 \
+       --data.end_time 2025-11-27T00:59
+
+       [profiling] total runtime = 7762.4 ms
