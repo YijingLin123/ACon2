@@ -434,6 +434,46 @@ def run_agent(agent: Assistant, query: str, max_retries: int = 2) -> Optional[Li
     return None
 
 
+def get_aggregated_price(query: str,
+                         agent_configs: List[dict],
+                         currency: str = 'USD',
+                         timestamp_hint: Optional[str] = None,
+                         aggregation: str = 'mean',
+                         truncation_ratio: float = 0.2,
+                         mode: str = 'latest',
+                         start_time: Optional[str] = None,
+                         end_time: Optional[str] = None) -> Optional[Decimal]:
+    """
+    执行agent聚合逻辑并返回聚合后的价格值（不打印输出）。
+    
+    Returns:
+        Optional[Decimal]: 聚合后的价格值，如果失败则返回None
+    """
+    ledger = MockBlockchain(aggregation=aggregation, truncation_ratio=truncation_ratio)
+    if mode == 'twap':
+        window_desc = f'{start_time or "数据起点"} 至 {end_time or "数据终点"}'
+        query = f'{query}（请按TWAP模式处理时间窗口：{window_desc}）'
+    for cfg in agent_configs:
+        agent = init_agent_service(
+            cfg['name'],
+            cfg['data_path'],
+            currency=currency,
+            timestamp_hint=timestamp_hint,
+            mode=mode,
+            start_time=start_time,
+            end_time=end_time,
+        )
+        response = run_agent(agent, query)
+
+        payload = _extract_price_payload(response)
+        direct_payload = _direct_tool_payload(agent, mode, currency, start_time, end_time)
+        final_payload = direct_payload or payload
+        if final_payload:
+            ledger.publish_price(cfg['name'], Decimal(final_payload['price']), final_payload['currency'])
+
+    return ledger.aggregated_price()
+
+
 def test(query: str,
          agent_configs: List[dict],
          currency: str = 'USD',
